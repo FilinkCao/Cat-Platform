@@ -3,37 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class IsPlatform : MonoBehaviour {
-    
+
+    private SpriteRenderer platRenderer = null; // Used to scale with tiling
+
     public Vector2Int tilePosition = new Vector2Int();
 
-    public float growSpeed = 0.1f;
+    public float growSpeed = 0.01f;
 
-    public float cutoff = 0.5f;
-    
+    public float cutoff = 0.99f;
+
+    void Start() {
+
+        platRenderer = GetComponent<SpriteRenderer>();
+    }
+
     // Grow x size of platform
     public void grow() {
 
-        Vector3 scale = transform.localScale;
+        if (platRenderer != null) {
 
-        scale.x += growSpeed;
+            Vector2 scale = platRenderer.size;
 
-        transform.localScale = scale;
+            scale.x += growSpeed;
+
+            platRenderer.size = scale;
+        }
     }
 
     // Shrink x size of platform, return false when too small to shrink further
     public bool shrink() {
-        
-        Vector3 scale = transform.localScale;
 
-        if (scale.x > cutoff) {
+        if (platRenderer != null) {
 
-            scale.x -= growSpeed;
+            Vector3 scale = platRenderer.size;
 
-            transform.localScale = scale;
+            if (scale.x > cutoff) {
 
-            return true;
+                scale.x -= growSpeed;
+
+                platRenderer.size = scale;
+
+                return true;
+            }
         }
-        
+
         return false;
     }
 }

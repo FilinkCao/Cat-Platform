@@ -65,9 +65,16 @@ public class PlatformMaker : MonoBehaviour {
 
                         GameObject newPlat = Instantiate(platformTypes[(int)(Random.value * platformTypes.Count)]);
 
+                        // Set the position data
                         if (newPlat != null) {
 
                             IsPlatform platScript = newPlat.GetComponent<IsPlatform>();
+                            Vector3 worldPos = new Vector3();
+
+                            worldPos.x = i + 0.5f;
+                            worldPos.y = j + 0.5f;
+
+                            newPlat.transform.position = worldPos;
 
                             if (platScript == null) {
 
@@ -75,7 +82,7 @@ public class PlatformMaker : MonoBehaviour {
                             }
 
                             platScript.tilePosition = new Vector2Int(i, j);
-
+                            
                             platforms.Add(platScript.tilePosition, newPlat);
                         }
                     }
