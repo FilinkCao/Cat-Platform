@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlatformMaker : MonoBehaviour {
     
-
     private Dictionary<Vector2Int, GameObject> platforms = new Dictionary<Vector2Int, GameObject>();
-
+    
     public List<GameObject> platformTypes = new List<GameObject>();
+
+    public GameObject popInOutEffect = null;
 
 	// Update is called once per frame
 	void Update () {
@@ -15,12 +16,13 @@ public class PlatformMaker : MonoBehaviour {
         growPlatformUpdate();
         createPlatformUpdate();
 	}
-
+    
     // Check through tile input and grow or shrink platforms appropriately
     private void growPlatformUpdate() {
 
         bool[,] tiles = InputGridManager.This.getActiveTiles();
         IsPlatform platform = null;
+        List<KeyValuePair<Vector2Int, GameObject>> toDelete = new List<KeyValuePair<Vector2Int, GameObject>>();
 
         foreach (KeyValuePair<Vector2Int, GameObject> p in platforms) {
 
@@ -36,17 +38,27 @@ public class PlatformMaker : MonoBehaviour {
                 // If shrink fails, platform is too small thus delete
                 else if (!platform.shrink()) {
 
-                    platforms.Remove(p.Key);
-
-                    Destroy(p.Value);
+                    toDelete.Add(p);
                 }
             }
             else {
 
-                platforms.Remove(p.Key);
-
-                Destroy(p.Value);
+                toDelete.Add(p);
             }
+        }
+
+        // Now remove from dictionary (avoids errors when deleting while iterating)
+        foreach (KeyValuePair<Vector2Int, GameObject> p in toDelete) {
+
+            if (popInOutEffect != null) {
+
+                GameObject pop = Instantiate(popInOutEffect);
+                pop.transform.position = p.Value.transform.position;
+            }
+            
+            platforms.Remove(p.Key);
+
+            Destroy(p.Value);
         }
     }
 
@@ -84,6 +96,12 @@ public class PlatformMaker : MonoBehaviour {
                             platScript.tilePosition = new Vector2Int(i, j);
                             
                             platforms.Add(platScript.tilePosition, newPlat);
+                        }
+
+                        if (popInOutEffect != null) {
+
+                            GameObject pop = Instantiate(popInOutEffect);
+                            pop.transform.position = newPlat.transform.position;
                         }
                     }
                 }

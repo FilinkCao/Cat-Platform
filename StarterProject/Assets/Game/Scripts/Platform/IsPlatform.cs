@@ -6,27 +6,51 @@ public class IsPlatform : MonoBehaviour {
 
     private SpriteRenderer platRenderer = null; // Used to scale with tiling
 
+    private int collidingPlatforms = 0; // Ignores growth if a platform is in the way
+
+    public GameObject spawnAnimationObject = null;
+
     public Vector2Int tilePosition = new Vector2Int();
 
     public float growSpeed = 0.01f;
 
-    public float cutoff = 0.99f;
+    public float minCutoff = 0.99f;
+    public float maxCutoff = 5.0f;
 
     void Start() {
 
         platRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void OnCollisionEnter2D(Collision2D collision) {
+        
+        if (collision.gameObject.GetComponent<IsPlatform>()) {
+
+            collidingPlatforms++;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision) {
+
+        if (collision.gameObject.GetComponent<IsPlatform>()) {
+
+            collidingPlatforms--;
+        }
+    }
+
     // Grow x size of platform
     public void grow() {
 
-        if (platRenderer != null) {
+        if (platRenderer != null && collidingPlatforms <= 0) {
 
             Vector2 scale = platRenderer.size;
 
-            scale.x += growSpeed;
+            if (scale.x <= maxCutoff) {
 
-            platRenderer.size = scale;
+                scale.x += growSpeed;
+
+                platRenderer.size = scale;
+            }
         }
     }
 
@@ -37,7 +61,7 @@ public class IsPlatform : MonoBehaviour {
 
             Vector3 scale = platRenderer.size;
 
-            if (scale.x > cutoff) {
+            if (scale.x > minCutoff) {
 
                 scale.x -= growSpeed;
 
