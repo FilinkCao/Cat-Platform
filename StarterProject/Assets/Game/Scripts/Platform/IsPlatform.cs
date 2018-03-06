@@ -17,9 +17,28 @@ public class IsPlatform : MonoBehaviour {
     public float minCutoff = 0.99f;
     public float maxCutoff = 5.0f;
 
+    // Timing delay variables
+    private bool growDelayComplete = false;
+    private float growDelayTimer = 0.0f;
+
+    public float growDelay = 1.0f;  // Time til can start growing
+
     void Start() {
 
         platRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void Update() {
+        
+        if (!growDelayComplete) {
+
+            growDelayTimer += Time.deltaTime;
+
+            if (growDelayTimer >= growDelay) {
+
+                growDelayComplete = true;
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
@@ -41,7 +60,7 @@ public class IsPlatform : MonoBehaviour {
     // Grow x size of platform
     public void grow() {
 
-        if (platRenderer != null && collidingPlatforms <= 0) {
+        if (growDelayComplete && platRenderer != null && collidingPlatforms <= 0) {
 
             Vector2 scale = platRenderer.size;
 
