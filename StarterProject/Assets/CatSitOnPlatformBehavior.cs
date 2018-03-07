@@ -6,6 +6,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
 
     float startTime;
     public float actionWaitTime;
+    public float jumpVelo;
     GameObject platform;
     public float retreatingSpd;
     public bool retreating;
@@ -15,7 +16,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         startTime = Time.time;
         platform = CatController.Instance.standOn;
         retreating = false;
-        
+        animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -52,7 +53,9 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
                 else
                 {
                     if (!retreating)
-                    animator.SetTrigger("walk");
+                    {
+                        animator.SetTrigger("walk");
+                    }
                 }
             }
         }
@@ -88,7 +91,17 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
     }
     void JumpTo(GameObject target)
     {
+        float x = Mathf.Clamp(CatController.Instance.gameObject.transform.position.x, target.transform.position.x - platform.GetComponent<SpriteRenderer>().size.x / 2f, target.transform.position.x + platform.GetComponent<SpriteRenderer>().size.x / 2f) - CatController.Instance.gameObject.transform.position.x;
+        float y = target.transform.position.y - CatController.Instance.gameObject.transform.position.y;
 
+        //float jumpAngle = Mathf.Atan(((jumpVelo * jumpVelo + Mathf.Sqrt(Mathf.Pow(jumpVelo, 4) - Physics2D.gravity.y * (Physics2D.gravity.y * x * Physics2D.gravity.y * x + 2 * y * jumpVelo * jumpVelo))) / (Physics2D.gravity.y * x)));
+        float verticalIniVelo = Mathf.Sqrt(2 * -Physics2D.gravity.y * (y + 1f));
+        float flightTime = verticalIniVelo / (-Physics2D.gravity.y);
+        float horizontalIniVelo = x / flightTime;
+
+        CatController.Instance.gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(horizontalIniVelo,verticalIniVelo);
+
+        CatController.Instance.gameObject.GetComponent <Animator>().SetTrigger("falling");
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
