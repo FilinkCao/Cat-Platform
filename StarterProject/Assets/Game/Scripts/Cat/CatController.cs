@@ -4,21 +4,16 @@ using UnityEngine;
 
 public class CatController : Singleton<CatController> {
 
-    BoxCollider2D triggerBox;
-    public GameObject standOn;
+    public List<GameObject> platforms = new List<GameObject>();
 
+    public GameObject standOn;
     public GameObject fish;
 
     public float platformDisplacement;
-
-    public List<GameObject> platforms = new List<GameObject>();
-	// Use this for initialization
-	void Start () {
-        triggerBox = gameObject.GetComponentInChildren<BoxCollider2D>();
-	}
-	
+    
 	// Update is called once per frame
 	void Update () {
+
         if (standOn)
         {
             platformDisplacement = (gameObject.transform.position.x - standOn.transform.position.x) / (standOn.GetComponent<SpriteRenderer>().size.x / 2f);
@@ -27,6 +22,8 @@ public class CatController : Singleton<CatController> {
         {
             platformDisplacement = 0;
         }
+        
+        platforms.Remove(null); // Clean deleted platforms
 	}
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -59,8 +56,4 @@ public class CatController : Singleton<CatController> {
             platforms.Remove(collision.gameObject);
         }
     }
-    //public BoxCollider2D GetCollider2D()
-    //{
-
-    //}
 }

@@ -9,7 +9,6 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     float direction;
 
     GameObject platform;
-    Vector2 startPosition;
 
     float startTime;
     
@@ -17,7 +16,6 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         startTime = Time.time;
-        startPosition = animator.gameObject.transform.position;
         platform = CatController.Instance.standOn;
 
         walkTime = Random.Range(minWalkTime, maxWalkTime);
@@ -53,7 +51,4 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     {
         //animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
-
-    // OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
-    
 }
