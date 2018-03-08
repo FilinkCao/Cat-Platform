@@ -6,7 +6,7 @@ public class FishMovement : MonoBehaviour {
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.GetComponent<CatController>())
+        if (collision.gameObject.GetComponentInChildren<CatController>())
         {
             Vector3 nextPos = new Vector3();
 

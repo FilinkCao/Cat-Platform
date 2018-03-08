@@ -8,6 +8,8 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
 
     private float timer;
 
+    public GameObject viewLine = null;
+
     [Range(0, 100)]
     public int walkChance = 30;
 
@@ -41,7 +43,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
             animator.SetTrigger("jumping");
         }
         // Ground disapeared
-        else if (animator.GetBool("grounded") == false || platform == null)
+        else if (platform == null)
         {
             animator.SetTrigger("falling");
             CatController.Instance.animMessanger.sendTriggerMessage("falling");
@@ -95,6 +97,15 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
                         else
                         {
                             CatController.Instance.transform.right = Vector3.left;
+                        }
+
+                        if (viewLine != null)
+                        {
+                            GameObject line = Instantiate(viewLine);
+
+                            line.transform.position = CatController.Instance.transform.position + CatController.Instance.transform.right / 2.0f + CatController.Instance.transform.up / 2.0f;
+
+                            line.transform.right = (CatController.Instance.transform.position - CatController.Instance.fish.transform.position).normalized;
                         }
                     }
                     if (CatController.Instance.platforms.Count > 1)
