@@ -8,6 +8,9 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
 
     private float timer;
 
+    [Range(0, 100)]
+    public int walkChance = 30;
+
     public float actionWaitTime;
     public float jumpVelo;
     public float retreatingSpd;
@@ -25,8 +28,15 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         timer += Time.deltaTime;
-        
-        if (animator.GetBool("fishInSight"))
+
+        if (animator.GetBool("haveFish"))
+        {
+            CatController.Instance.animMessanger.sendTriggerMessage("party");
+            timer = 0.0f;
+            actionWaitTime = 3.0f;
+            animator.SetBool("haveFish", false);
+        }
+        else if (animator.GetBool("fishInSight"))
         {
             animator.SetTrigger("jumping");
         }
@@ -54,17 +64,44 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
             }
             else if (timer > actionWaitTime)
             {
-                if (CatController.Instance.platforms.Count > 1)
-                {
-                    animator.SetTrigger("jumping");
-                }
-                else if (!retreating)
-                {
-                    animator.SetTrigger("walk");
-                }
-
                 actionWaitTime = Random.Range(1.0f, 3.0f);
                 timer = 0;
+
+                int chance = Random.Range(0, 100);
+
+                // Always leave a chance to walk instead of taking action
+                if (chance < walkChance)
+                {
+                    if (!retreating)
+                    {
+                        animator.SetTrigger("walk");
+                    }
+                }
+                else
+                {
+                    // Stare longingly at fish.
+                    // Set action time should be longer than beg animation
+                    if (CatController.Instance.platforms.Count == 0)
+                    {
+                        actionWaitTime = 3.0f;
+
+                        CatController.Instance.animMessanger.sendTriggerMessage("stare");
+
+                        // Rotate towards fish
+                        if (CatController.Instance.fish.transform.position.x - CatController.Instance.transform.position.x > 0.0f)
+                        {
+                            CatController.Instance.transform.right = Vector3.right;
+                        }
+                        else
+                        {
+                            CatController.Instance.transform.right = Vector3.left;
+                        }
+                    }
+                    if (CatController.Instance.platforms.Count > 1)
+                    {
+                        animator.SetTrigger("jumping");
+                    }
+                }
             }
         }
     }

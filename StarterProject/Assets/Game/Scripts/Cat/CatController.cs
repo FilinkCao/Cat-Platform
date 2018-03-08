@@ -49,7 +49,7 @@ public class CatController : Singleton<CatController> {
     {
         if (collision.gameObject.tag == "Fish")
         {
-            Debug.Log("Hit fish!");
+            gameObject.GetComponent<Animator>().SetBool("haveFish", true);
         }
         else if (((collision.gameObject != lastStandOn && jumpingDown) || !jumpingDown))
         {
