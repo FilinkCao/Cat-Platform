@@ -19,7 +19,6 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         timer = 0;
         platform = CatController.Instance.standOn;
         retreating = false;
-        animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

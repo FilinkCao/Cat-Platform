@@ -7,13 +7,16 @@ public class CatController : Singleton<CatController> {
     public List<GameObject> platforms = new List<GameObject>();
 
     public GameObject standOn;
+    public GameObject lastStandOn;
     public GameObject fish;
 
     public float platformDisplacement;
+
+    public bool jumpingDown = false;
     
 	// Update is called once per frame
 	void Update () {
-
+        
         if (standOn)
         {
             platformDisplacement = (gameObject.transform.position.x - standOn.transform.position.x) / (standOn.GetComponent<SpriteRenderer>().size.x / 2f);
@@ -27,10 +30,25 @@ public class CatController : Singleton<CatController> {
 	}
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
+        if ((collision.gameObject != lastStandOn && jumpingDown) || !jumpingDown)
         {
-            gameObject.GetComponent<Animator>().SetBool("grounded", true);
-            standOn = collision.gameObject;
+            if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
+            {
+                gameObject.GetComponent<Animator>().SetBool("grounded", true);
+                standOn = collision.gameObject;
+
+                jumpingDown = false;
+
+                if (lastStandOn != null)
+                {
+                    PlatformEffector2D platEff = lastStandOn.GetComponent<PlatformEffector2D>();
+
+                    if (platEff != null)
+                    {
+                        platEff.rotationalOffset = 0;
+                    }
+                }
+            }
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -38,6 +56,11 @@ public class CatController : Singleton<CatController> {
         if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
         {
             gameObject.GetComponent<Animator>().SetBool("grounded", false);
+
+            if (standOn != null)
+            {
+                lastStandOn = standOn;
+            }
             standOn = null;
         }
     }

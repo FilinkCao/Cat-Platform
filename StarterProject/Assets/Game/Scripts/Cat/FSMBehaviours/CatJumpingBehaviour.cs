@@ -63,11 +63,11 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
             // Use lower velocity when going down
             if (y >= 0.0f)
             {
-                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 6.0f, 9.0f);
+                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 6.0f, 9.5f);
             }
             else
             {
-                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 2.0f, 5.0f);
+                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 1.0f, 3.0f);
             }
 
             
@@ -88,6 +88,8 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
             else
             {
                 angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) - rootedVal) / (gravity * x));
+
+                CatController.Instance.jumpingDown = true;
             }
             
             // Rotate the cat to aim in the direction of the jump, then fire and readjust rotation to normal
@@ -111,6 +113,16 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
             }
             
             CatController.Instance.gameObject.GetComponent<Animator>().SetTrigger("falling");
+
+            if (CatController.Instance.standOn != null)
+            {
+                PlatformEffector2D platEff = CatController.Instance.standOn.GetComponent<PlatformEffector2D>();
+
+                if (platEff != null)
+                {
+                    platEff.rotationalOffset = 180;
+                }
+            }
         }
         else
         {
