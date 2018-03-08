@@ -16,8 +16,6 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        CatController.Instance.animMessanger.sendTriggerMessage("sitting");
-
         timer = 0;
         platform = CatController.Instance.standOn;
         retreating = false;
@@ -36,6 +34,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         else if (animator.GetBool("grounded") == false || platform == null)
         {
             animator.SetTrigger("falling");
+            CatController.Instance.animMessanger.sendTriggerMessage("falling");
         }
         else
         {
@@ -69,10 +68,4 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
             }
         }
     }
-    
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-
-    //}
 }
