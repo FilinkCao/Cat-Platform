@@ -8,7 +8,7 @@ public class IsPlatform : MonoBehaviour {
     private PlatformEffector2D platEffect = null;
 
     private float fixTimer = 0.0f;
-    private float platFixTime = 2.0f;
+    private float platFixTime = 3.0f;
 
     private bool fixTimerStarted = false;
 

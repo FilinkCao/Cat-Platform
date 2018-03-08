@@ -74,7 +74,9 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
             }
             else
             {
-                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 1.0f, 3.0f);
+                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 3.0f, 5.0f);
+
+                CatController.Instance.jumpingDown = true;
             }
             
             float gravity = -Physics2D.gravity.y;
@@ -84,20 +86,8 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
                 - gravity * ( gravity * Mathf.Pow(x, 2.0f) + 2.0f * (y * Mathf.Pow(velocity, 2.0f)) )
             );
             
-            float angle = 0.0f;
-
-            // Change the low parabala or high one depending on if jumping up or down
-            if (y >= 0.0f)
-            {
-                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) + rootedVal) / (gravity * x));
-            }
-            else
-            {
-                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) - rootedVal) / (gravity * x));
-
-                CatController.Instance.jumpingDown = true;
-            }
-
+            float angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) + rootedVal) / (gravity * x));
+            
             Debug.Log(angle);
 
             // Rotate the cat to aim in the direction of the jump, then fire and re-adjust rotation to normal
@@ -131,9 +121,7 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
                     platEff.rotationalOffset = 180;
                 }
             }
-
-            CatController.Instance.jumping = true;
-
+            
             CatController.Instance.animMessanger.sendTriggerMessage("jumping");
         }
         else
