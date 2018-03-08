@@ -15,10 +15,21 @@ public class CatController : Singleton<CatController> {
     public float platformDisplacement;
 
     public bool jumpingDown = false;
+    public bool jumping = false;
     
 	// Update is called once per frame
 	void Update () {
-        
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+        // Correct velocity to 0 to help with platform collisions
+        if (rb != null && Mathf.Abs(rb.velocity.y) < 0.05f)
+        {
+            Vector2 v = rb.velocity;
+            v.y = 0.0f;
+            rb.velocity = v;
+        }
+
         if (standOn)
         {
             platformDisplacement = (gameObject.transform.position.x - standOn.transform.position.x) / (standOn.GetComponent<SpriteRenderer>().size.x / 2f);
@@ -41,9 +52,12 @@ public class CatController : Singleton<CatController> {
             if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
             {
                 gameObject.GetComponent<Animator>().SetBool("grounded", true);
+                animMessanger.sendBoolMessage("grounded", true);
+
                 standOn = collision.gameObject;
 
                 jumpingDown = false;
+                jumping = false;
 
                 if (lastStandOn != null)
                 {
@@ -63,9 +77,10 @@ public class CatController : Singleton<CatController> {
         {
             gameObject.GetComponent<Animator>().SetBool("fishInSight", false);
         }
-        else if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
+        else if ((collision.gameObject == null || jumping) && (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground")))
         {
             gameObject.GetComponent<Animator>().SetBool("grounded", false);
+            animMessanger.sendBoolMessage("grounded", false);
 
             if (standOn != null)
             {

@@ -28,21 +28,28 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.GetBool("grounded") == false)
+        if (!animator.GetBool("grounded"))
         {
-            animator.SetTrigger("falling");
+            animator.SetTrigger("stopWalking");
         }
         else
         {
             animator.gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(walkingSpd * direction, 0.0f);
-            if (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+
+            if (direction > 0.0f)
             {
-                animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-                animator.SetTrigger("stopWalking");
+                animator.gameObject.transform.right = Vector3.right;
             }
-            else if (Time.time - startTime > walkTime)
+            else
             {
-                animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                animator.gameObject.transform.right = Vector3.left;
+            }
+
+            if (
+                (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+                || ((Time.time - startTime) > walkTime)
+                )
+            {
                 animator.SetTrigger("stopWalking");
             }
         }
@@ -51,6 +58,8 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        CatController.Instance.animMessanger.sendTriggerMessage("sitting");
+
+        animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
 }
