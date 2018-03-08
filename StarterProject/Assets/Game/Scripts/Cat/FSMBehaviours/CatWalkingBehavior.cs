@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CatWalkingBehavior : StateMachineBehaviour {
+
     public float walkingSpd;
-    public float maxWalkTime, minWalkTime;
+    public float maxWalkTime = 3.0f, minWalkTime = 1.0f;
     float walkTime;
     float direction;
 
@@ -15,6 +16,8 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        CatController.Instance.animMessanger.sendTriggerMessage("walking");
+
         startTime = Time.time;
         platform = CatController.Instance.standOn;
 
@@ -31,14 +34,13 @@ public class CatWalkingBehavior : StateMachineBehaviour {
         }
         else
         {
-            animator.gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(walkingSpd * direction, 0);
+            animator.gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(walkingSpd * direction, 0.0f);
             if (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
             {
                 animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 animator.SetTrigger("stopWalking");
-                return;
             }
-            if (Time.time - startTime > walkTime)
+            else if (Time.time - startTime > walkTime)
             {
                 animator.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 animator.SetTrigger("stopWalking");

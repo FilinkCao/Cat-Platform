@@ -10,6 +10,8 @@ public class CatController : Singleton<CatController> {
     public GameObject lastStandOn;
     public GameObject fish;
 
+    public AnimMessager animMessanger = null;
+
     public float platformDisplacement;
 
     public bool jumpingDown = false;
@@ -82,7 +84,6 @@ public class CatController : Singleton<CatController> {
         {
             platforms.Add(collision.gameObject);
         }
-        
     }
     private void OnTriggerExit2D(Collider2D collision)
     {

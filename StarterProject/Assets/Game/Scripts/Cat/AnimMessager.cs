@@ -11,6 +11,8 @@ public class AnimMessager : MonoBehaviour {
 	void Start () {
 
         anim = GetComponent<Animator>();
+
+        CatController.Instance.animMessanger = this;
 	}
 	
     public void sendTriggerMessage(string varName) {
