@@ -30,7 +30,11 @@ public class CatController : Singleton<CatController> {
 	}
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if ((collision.gameObject != lastStandOn && jumpingDown) || !jumpingDown)
+        if (collision.gameObject.tag == "Fish")
+        {
+            Debug.Log("Hit fish!");
+        }
+        else if ((collision.gameObject != lastStandOn && jumpingDown) || !jumpingDown)
         {
             if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
             {
@@ -53,7 +57,11 @@ public class CatController : Singleton<CatController> {
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
+        if (collision.gameObject == fish)
+        {
+            gameObject.GetComponent<Animator>().SetBool("fishInSight", false);
+        }
+        else if (collision.gameObject.tag == ("Platform") || collision.gameObject.tag == ("Ground"))
         {
             gameObject.GetComponent<Animator>().SetBool("grounded", false);
 
@@ -66,7 +74,11 @@ public class CatController : Singleton<CatController> {
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Platform")
+        if (collision.gameObject == fish)
+        {
+            gameObject.GetComponent<Animator>().SetBool("fishInSight", true);
+        }
+        else if (collision.gameObject.tag == "Platform")
         {
             platforms.Add(collision.gameObject);
         }

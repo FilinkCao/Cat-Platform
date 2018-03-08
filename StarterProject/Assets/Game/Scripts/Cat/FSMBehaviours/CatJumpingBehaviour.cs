@@ -9,7 +9,14 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
     //OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        ChooseAPlatformToJump();
+        if (animator.GetBool("fishInSight"))
+        {
+            JumpTo(CatController.Instance.fish);
+        }
+        else
+        {
+            ChooseAPlatformToJump();
+        }
     }
 
     ////OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

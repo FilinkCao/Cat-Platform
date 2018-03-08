@@ -26,8 +26,12 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
     {
         timer += Time.deltaTime;
         
+        if (animator.GetBool("fishInSight"))
+        {
+            animator.SetTrigger("jumping");
+        }
         // Ground disapeared
-        if (animator.GetBool("grounded") == false || platform == null)
+        else if (animator.GetBool("grounded") == false || platform == null)
         {
             animator.SetTrigger("falling");
         }
