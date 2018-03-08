@@ -56,43 +56,57 @@ public class CatJumpingBehaviour : StateMachineBehaviour {
         if (target != null)
         {
             float x = target.transform.position.x - CatController.Instance.gameObject.transform.position.x;
-            float y = target.transform.position.y - CatController.Instance.gameObject.transform.position.y + 1.0f;
+            float y = target.transform.position.y - CatController.Instance.gameObject.transform.position.y;
 
-            float velocity = Vector2.SqrMagnitude(new Vector2(x, y));
-            float gravity = Physics2D.gravity.y;
+            float velocity = 0.0f;
 
-            float rootedVal = Mathf.Sqrt(
-                Mathf.Pow(velocity, 4)
-                - gravity
-                    * (gravity * Mathf.Pow(x, 2)
-                        + 2.0f * y * Mathf.Pow(velocity, 2))
-            );
-
-            float angle = 0;
-
-            if (y >= 0)
+            // Use lower velocity when going down
+            if (y >= 0.0f)
             {
-                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2) - rootedVal) / gravity * x);
+                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 6.0f, 9.0f);
             }
             else
             {
-                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2) + rootedVal) / gravity * x);
+                velocity = Mathf.Clamp(Vector2.SqrMagnitude(new Vector2(x, y)) * 2.0f, 2.0f, 5.0f);
+            }
+
+            
+            float gravity = -Physics2D.gravity.y;
+            
+            float rootedVal = Mathf.Sqrt(
+                Mathf.Pow(velocity, 4.0f)
+                - gravity * ( gravity * Mathf.Pow(x, 2.0f) + 2.0f * (y * Mathf.Pow(velocity, 2.0f)) )
+            );
+            
+            float angle = 0.0f;
+
+            // Change the low parabala or high one depending on if jumping up or down
+            if (y >= 0.0f)
+            {
+                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) + rootedVal) / (gravity * x));
+            }
+            else
+            {
+                angle = Mathf.Rad2Deg * Mathf.Atan((Mathf.Pow(velocity, 2.0f) - rootedVal) / (gravity * x));
             }
             
-            Debug.Log("Angle " + angle);
-            Debug.Log("Velocity " + velocity);
-            
-            if (angle >= 0)
+            // Rotate the cat to aim in the direction of the jump, then fire and readjust rotation to normal
+            if ((angle >= 0.0f && y >= 0.0f) || (angle < 0.0f && y < 0.0f))
             {
-                CatController.Instance.transform.Rotate(Vector3.forward, angle);
+                CatController.Instance.transform.right = Vector3.right;
+
+                CatController.Instance.transform.Rotate(Vector3.forward, Mathf.Abs(angle));
                 CatController.Instance.gameObject.GetComponent<Rigidbody2D>().velocity = CatController.Instance.transform.right * velocity;
+
                 CatController.Instance.transform.right = Vector3.right;
             }
             else
             {
-                CatController.Instance.transform.Rotate(Vector3.up, 180.0f);
+                CatController.Instance.transform.right = Vector3.left;
+
                 CatController.Instance.transform.Rotate(Vector3.forward, Mathf.Abs(angle));
                 CatController.Instance.gameObject.GetComponent<Rigidbody2D>().velocity = CatController.Instance.transform.right * velocity;
+
                 CatController.Instance.transform.right = Vector3.left;
             }
             
