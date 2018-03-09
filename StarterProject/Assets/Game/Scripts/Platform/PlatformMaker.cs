@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformMaker : Singleton <PlatformMaker> {
+public class PlatformMaker : MonoBehaviour {
     
     private Dictionary<Vector2Int, GameObject> platforms = new Dictionary<Vector2Int, GameObject>();
     
     public List<GameObject> platformTypes = new List<GameObject>();
 
     public GameObject popInOutEffect = null;
-
-    public GameObject bird;
 
 	// Update is called once per frame
 	void Update () {
@@ -109,21 +107,5 @@ public class PlatformMaker : Singleton <PlatformMaker> {
                 }
             }
         }
-    }
-
-    public void GiveFish(GameObject p)
-    {
-        Dictionary<GameObject, Vector2Int> InversePlatforms = new Dictionary<GameObject, Vector2Int>();
-        foreach (KeyValuePair<Vector2Int,GameObject> entry in platforms )
-        {
-            InversePlatforms.Add(entry.Value, entry.Key);
-        }
-
-        Vector2Int targetPosition = InversePlatforms[p];
-        Vector2 fishSpawnPos = new Vector2(targetPosition.x + 0.5f, targetPosition.y + 0.8f);
-
-
-        bird.SendMessage("GiveFish", fishSpawnPos);
-
     }
 }

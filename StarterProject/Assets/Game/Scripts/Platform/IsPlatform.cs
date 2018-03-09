@@ -23,8 +23,6 @@ public class IsPlatform : MonoBehaviour {
     public float minCutoff = 0.99f;
     public float maxCutoff = 5.0f;
 
-    public bool givenFish;
-
     // Timing delay variables
     private bool growDelayComplete = false;
     private float growDelayTimer = 0.0f;
@@ -35,8 +33,6 @@ public class IsPlatform : MonoBehaviour {
 
         platRenderer = GetComponent<SpriteRenderer>();
         platEffect = GetComponent<PlatformEffector2D>();
-        givenFish = false;
-
     }
 
     private void Update() {
@@ -107,15 +103,6 @@ public class IsPlatform : MonoBehaviour {
 
                 platRenderer.size = scale;
             }
-            else
-            {
-                //Give Bonus
-                if (!givenFish)
-                {
-                    PlatformMaker.Instance.GiveFish(gameObject);
-                    givenFish = true;
-                }
-            }
         }
     }
 
@@ -137,10 +124,5 @@ public class IsPlatform : MonoBehaviour {
         }
 
         return false;
-    }
-
-    public void GiveFish ()
-    {
-
     }
 }
