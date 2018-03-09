@@ -2,60 +2,72 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformMaker : MonoBehaviour {
-    
+public class PlatformMaker : Singleton <PlatformMaker>
+{
+
     private Dictionary<Vector2Int, GameObject> platforms = new Dictionary<Vector2Int, GameObject>();
-    
+
     public List<GameObject> platformTypes = new List<GameObject>();
 
-    public GameObject popInOutEffect = null;
+    public GameObject[] popInOutEffects;
 
-	// Update is called once per frame
-	void Update () {
+    public GameObject bird;
+
+    // Update is called once per frame
+    void Update()
+    {
 
         growPlatformUpdate();
         createPlatformUpdate();
-	}
-    
+    }
+
     // Check through tile input and grow or shrink platforms appropriately
-    private void growPlatformUpdate() {
+    private void growPlatformUpdate()
+    {
 
         bool[,] tiles = InputGridManager.This.getActiveTiles();
         IsPlatform platform = null;
         List<KeyValuePair<Vector2Int, GameObject>> toDelete = new List<KeyValuePair<Vector2Int, GameObject>>();
 
-        foreach (KeyValuePair<Vector2Int, GameObject> p in platforms) {
+        foreach (KeyValuePair<Vector2Int, GameObject> p in platforms)
+        {
 
             platform = p.Value.GetComponent<IsPlatform>();
 
-            if (platform != null) {
+            if (platform != null)
+            {
 
                 // Grow the platform if still pushed, shrink otherwise
-                if (tiles[p.Key.x, p.Key.y]) {
+                if (tiles[p.Key.x, p.Key.y])
+                {
 
                     platform.grow();
                 }
                 // If shrink fails, platform is too small thus delete
-                else if (!platform.shrink()) {
+                else if (!platform.shrink())
+                {
 
                     toDelete.Add(p);
                 }
             }
-            else {
+            else
+            {
 
                 toDelete.Add(p);
             }
         }
 
         // Now remove from dictionary (avoids errors when deleting while iterating)
-        foreach (KeyValuePair<Vector2Int, GameObject> p in toDelete) {
+        foreach (KeyValuePair<Vector2Int, GameObject> p in toDelete)
+        {
 
-            if (popInOutEffect != null) {
+            //if (popInOutEffect != null)
+            //{
 
-                GameObject pop = Instantiate(popInOutEffect);
-                pop.transform.position = p.Value.transform.position;
-            }
-            
+            //    GameObject pop = Instantiate(popInOutEffect);
+            //    pop.transform.position = p.Value.transform.position;
+            //}
+
             platforms.Remove(p.Key);
 
             Destroy(p.Value);
@@ -63,22 +75,28 @@ public class PlatformMaker : MonoBehaviour {
     }
 
     // Check through pressed tile input and create missing platforms
-    private void createPlatformUpdate() {
+    private void createPlatformUpdate()
+    {
 
-        if (platformTypes.Count > 0) {
+        if (platformTypes.Count > 0)
+        {
 
             bool[,] tiles = InputGridManager.This.getActiveTiles();
 
-            for (int i = 0; i < InputGridManager.gridSize; i++) {
-                for (int j = 0; j < InputGridManager.gridSize; j++) {
+            for (int i = 0; i < InputGridManager.gridSize; i++)
+            {
+                for (int j = 0; j < InputGridManager.gridSize; j++)
+                {
 
                     // If platform does not exist at this point create it
-                    if (tiles[i, j] && !platforms.ContainsKey(new Vector2Int(i, j))) {                 /// ACCOUNT FOR MULTIPLE TILES IN ON AREA PRESSED
-
-                        GameObject newPlat = Instantiate(platformTypes[(int)(Random.value * platformTypes.Count)]);
+                    if (tiles[i, j] && !platforms.ContainsKey(new Vector2Int(i, j)))
+                    {                 /// ACCOUNT FOR MULTIPLE TILES IN ON AREA PRESSED
+                        int type = (int)(Random.value * platformTypes.Count);
+                        GameObject newPlat = Instantiate(platformTypes[type]);
 
                         // Set the position data
-                        if (newPlat != null) {
+                        if (newPlat != null)
+                        {
 
                             IsPlatform platScript = newPlat.GetComponent<IsPlatform>();
                             Vector3 worldPos = new Vector3();
@@ -88,24 +106,44 @@ public class PlatformMaker : MonoBehaviour {
 
                             newPlat.transform.position = worldPos;
 
-                            if (platScript == null) {
+                            if (platScript == null)
+                            {
 
                                 platScript = newPlat.AddComponent<IsPlatform>();
                             }
 
                             platScript.tilePosition = new Vector2Int(i, j);
-                            
+
                             platforms.Add(platScript.tilePosition, newPlat);
                         }
 
-                        if (popInOutEffect != null) {
+                        if (popInOutEffects != null)
+                        {
 
-                            GameObject pop = Instantiate(popInOutEffect);
+                            GameObject pop = Instantiate(popInOutEffects[type]);
                             pop.transform.position = newPlat.transform.position;
                         }
                     }
                 }
             }
         }
+
+
+    }
+    public void GiveFish(GameObject p)
+    {
+        Debug.Log("ah.");
+        Dictionary<GameObject, Vector2Int> InversePlatforms = new Dictionary<GameObject, Vector2Int>();
+        foreach (KeyValuePair<Vector2Int, GameObject> entry in platforms)
+        {
+            InversePlatforms.Add(entry.Value, entry.Key);
+        }
+
+        Vector2Int targetPosition = InversePlatforms[p];
+        Vector2 fishSpawnPos = new Vector2(targetPosition.x + 0.5f, targetPosition.y + 0.8f);
+
+
+        bird.SendMessage("GiveFish", fishSpawnPos);
+
     }
 }

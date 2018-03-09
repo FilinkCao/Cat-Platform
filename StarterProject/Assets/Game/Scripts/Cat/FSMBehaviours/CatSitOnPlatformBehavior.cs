@@ -9,6 +9,8 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
     private float timer;
 
     public GameObject viewLine = null;
+    
+    public GameObject flower;
 
     [Range(0, 100)]
     public int walkChance = 30;
@@ -25,6 +27,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         platform = CatController.Instance.standOn;
         retreating = false;
     }
+    
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -34,6 +37,10 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         if (animator.GetBool("haveFish"))
         {
             CatController.Instance.animMessanger.sendTriggerMessage("party");
+
+            GameObject newFlower = Instantiate(flower, animator.gameObject.transform.position, Quaternion.identity) as GameObject;
+            newFlower.transform.parent = animator.gameObject.transform;
+
             timer = 0.0f;
             actionWaitTime = 3.0f;
             animator.SetBool("haveFish", false);

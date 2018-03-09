@@ -22,7 +22,7 @@ public class LineExpandDestroy : MonoBehaviour {
         if (sprite != null)
         {
             timer += Time.deltaTime;
-            sprite.size = new Vector2(sprite.size.x + (Time.deltaTime * 2.0f), sprite.size.y);
+            sprite.size = new Vector2(sprite.size.x + (Time.deltaTime * 4.0f), sprite.size.y);
 
             if (timer > timeTilDeath)
             {

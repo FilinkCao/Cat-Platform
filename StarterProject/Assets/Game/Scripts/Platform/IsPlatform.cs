@@ -28,9 +28,9 @@ public class IsPlatform : MonoBehaviour {
     private float growDelayTimer = 0.0f;
 
     public float growDelay = 1.0f;  // Time til can start growing
-
+    bool gaveFish;
     void Start() {
-
+        gaveFish = false;
         platRenderer = GetComponent<SpriteRenderer>();
         platEffect = GetComponent<PlatformEffector2D>();
     }
@@ -103,6 +103,14 @@ public class IsPlatform : MonoBehaviour {
 
                 platRenderer.size = scale;
             }
+            else
+            {
+                if (!gaveFish)
+                {
+                    PlatformMaker.Instance.GiveFish(gameObject);
+                    gaveFish = true;
+                }
+            }
         }
     }
 
@@ -121,6 +129,7 @@ public class IsPlatform : MonoBehaviour {
 
                 return true;
             }
+            
         }
 
         return false;

@@ -12,16 +12,32 @@ public class CatWalkingBehavior : StateMachineBehaviour {
     GameObject platform;
 
     float startTime;
-    
+    bool steeredAway;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        steeredAway = false;
         CatController.Instance.animMessanger.sendTriggerMessage("walking");
 
         startTime = Time.time;
         platform = CatController.Instance.standOn;
 
         walkTime = Random.Range(minWalkTime, maxWalkTime);
+
+        
+
+        if (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+        {
+            steeredAway = true;
+            if ((animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+            {
+                direction = -1f;
+            }
+            else
+            {
+                direction = 1f;
+            }
+        }
         direction = Mathf.Sign(Random.Range(1f, -1f));
     }
 
@@ -46,7 +62,7 @@ public class CatWalkingBehavior : StateMachineBehaviour {
             }
 
             if (
-                (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+                (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f&&!steeredAway )
                 || ((Time.time - startTime) > walkTime)
                 )
             {
