@@ -38,7 +38,7 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
             actionWaitTime = 3.0f;
             animator.SetBool("haveFish", false);
         }
-        else if (animator.GetBool("fishInSight"))
+        else if (animator.GetBool("fishInSight")&&animator.GetBool("grounded"))
         {
             animator.SetTrigger("jumping");
         }
@@ -50,9 +50,9 @@ public class CatSitOnPlatformBehavior : StateMachineBehaviour {
         }
         else
         {
-            if (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.8f)
+            if (Mathf.Abs(animator.gameObject.transform.position.x - platform.transform.position.x) / (platform.GetComponent<SpriteRenderer>().size.x / 2f) > 0.95f)
             {
-                retreating = true;
+              //  retreating = true;
             }
 
             if (retreating)
